@@ -1,3 +1,29 @@
+/* 1. Select the mode you wish to drive with: AUTO RED or AUTO BLUE, or TELEOP
+*       a. TELEOP:
+*           Uses SPLIT STICK ARCADE for movement (one stick controls forward and back, other controls turning)
+*
+*           Pressing CROSS spins hex motor forward
+*           Pressing TRIANGLE spins hex motor backward
+*
+*           Pressing LEFT D-PAD and RIGHT D-PAD spins the agitator in different directions
+*
+*           Pressing OPTIONS puts flywheel in reverse
+*
+*           Pressing LEFT BUMPER does a far shot
+*           Pressing SQUARE changes flywheel speed to far shot speed or "max" velocity
+*
+*           Pressing RIGHT BUMBER does a near shot
+*           Pressing CIRCLE changes flywheel speed to near shot speed or "bank" velocity
+*
+*           Pressing nothing stops the flywheel and hex motor, if you are not manually controlling the agitator, agitator will not stutter
+*
+*       b. AUTO RED and AUTO BLUE:
+*           For 10 seconds shoots any balls pre-loaded into RED or BLUE goal
+*           Backs up a little
+*           Turns around
+*           Gets off of line
+*/
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -34,7 +60,10 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         update();
     }
 
+    // Function for initializing variables and configuring motor directions
     void awake() {
+
+        // Getting components of robot into variables
         flywheel = hardwareMap.get(DcMotor.class, "flywheel");
         coreHex = hardwareMap.get(DcMotor.class, "coreHex");
         leftDrive = hardwareMap.get(DcMotor.class, "leftDrive");
@@ -46,11 +75,14 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         flywheel.setDirection(DcMotor.Direction.REVERSE);
         coreHex.setDirection(DcMotor.Direction.REVERSE);
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        //Ensures the servo is active and ready
+
+        // Ensures the servo is active and ready
         servo.setPower(0);
     }
 
+    // Function for everything that happens before start button is actually clicked (things like selecting auto or teleop process)
     void initialization() {
+
         //On initilization the Driver Station will prompt for which OpMode should be run - Auto Blue, Auto Red, or TeleOp
         while (opModeInInit()) {
             operationSelected = selectOperation(operationSelected, gamepad1.psWasPressed());
@@ -60,11 +92,15 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         waitForStart();
     }
 
+    // Continuous function / where each main loop will happen
     void update() {
+
         selectMode();
     }
 
     private void selectMode() {
+
+        // Configures robot operation depending on if you are starting on red or blue or if mode is teleop
         if (operationSelected.equals(AUTO_BLUE)) {
             doAutoBlue();
         } else if (operationSelected.equals(AUTO_RED)) {
@@ -79,6 +115,8 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      * The telemetry readout to the Driver Station App will update to reflect which is currently selected for when "play" is pressed.
      */
     private String selectOperation(String state, boolean cycleNext) {
+
+        // Configures operation mode selection (already explained up above)
         if (cycleNext) {
             if (state.equals(TELEOP)) {
                 state = AUTO_BLUE;
@@ -105,12 +143,14 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      * If TeleOp was selected or defaulted to, the following will be active upon pressing "play".
      */
     private void doTeleOp() {
+
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 // Calling our methods while the OpMode is running
                 splitStickArcadeDrive();
                 setFlywheelVelocity();
                 manualCoreHexAndServoControl();
+
                 telemetry.addData("Flywheel Velocity", ((DcMotorEx) flywheel).getVelocity());
                 telemetry.addData("Flywheel Power", flywheel.getPower());
                 telemetry.update();
@@ -119,10 +159,11 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     }
 
     /**
-     * Controls for the drivetrain. The robot uses a split stick stlye arcade drive.
+     * Controls for the drivetrain. The robot uses a split stick style arcade drive.
      * Forward and back is on the left stick. Turning is on the right stick.
      */
     private void splitStickArcadeDrive() {
+
         float X;
         float Y;
 
@@ -136,12 +177,14 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      * Manual control for the Core Hex powered feeder and the agitator servo in the hopper
      */
     private void manualCoreHexAndServoControl() {
+
         // Manual control for the Core Hex intake
         if (gamepad1.cross) {
             coreHex.setPower(0.5);
         } else if (gamepad1.triangle) {
             coreHex.setPower(-0.5);
         }
+
         // Manual control for the hopper's servo
         if (gamepad1.dpad_left) {
             servo.setPower(1);
@@ -156,6 +199,7 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      * The bumpers will activate the flywheel, Core Hex feeder, and servo to cycle a series of balls.
      */
     private void setFlywheelVelocity() {
+
         if (gamepad1.options) {
             flywheel.setPower(-0.5);
         } else if (gamepad1.left_bumper) {
@@ -239,16 +283,21 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      * Then it will back away from the goal and off the launch line.
      */
     private void doAutoBlue() {
+
         if (opModeIsActive()) {
+
             telemetry.addData("RUNNING OPMODE", operationSelected);
             telemetry.update();
-            // Fire balls
+
             autoLaunchTimer.reset();
             while (opModeIsActive() && autoLaunchTimer.milliseconds() < 10000) {
+
                 BANK_SHOT_AUTO();
+
                 telemetry.addData("Launcher Countdown", autoLaunchTimer.seconds());
                 telemetry.update();
             }
+
             ((DcMotorEx) flywheel).setVelocity(0);
             coreHex.setPower(0);
             servo.setPower(0);
@@ -267,16 +316,21 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      * Then it will back away from the goal and off the launch line.
      */
     private void doAutoRed() {
+
         if (opModeIsActive()) {
+
             telemetry.addData("RUNNING OPMODE", operationSelected);
             telemetry.update();
-            // Fire balls
+
             autoLaunchTimer.reset();
             while (opModeIsActive() && autoLaunchTimer.milliseconds() < 10000) {
+
                 BANK_SHOT_AUTO();
+
                 telemetry.addData("Launcher Countdown", autoLaunchTimer.seconds());
                 telemetry.update();
             }
+
             ((DcMotorEx) flywheel).setVelocity(0);
             coreHex.setPower(0);
             servo.setPower(0);
