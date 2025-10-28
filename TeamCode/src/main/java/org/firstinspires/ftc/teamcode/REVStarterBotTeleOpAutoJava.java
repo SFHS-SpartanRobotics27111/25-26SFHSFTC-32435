@@ -2,8 +2,8 @@
 *       a. TELEOP:
 *           Uses SPLIT STICK ARCADE for movement (one stick controls forward and back, other controls turning)
 *
-*           Pressing CROSS spins hex motor forward
-*           Pressing TRIANGLE spins hex motor backward
+*           Pressing CROSS spins intake forward
+*           Pressing TRIANGLE spins intake back
 *
 *           Pressing LEFT D-PAD and RIGHT D-PAD spins the agitator in different directions
 *
@@ -100,6 +100,8 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
 
     private void selectMode() {
 
+        // CANNOT USE PLAYSTATION CONTROLLER TO SWITCH BETWEEN MODES BEFORE AUTO
+
         // Configures robot operation depending on if you are starting on red or blue or if mode is teleop
         if (operationSelected.equals(AUTO_BLUE)) {
             doAutoBlue();
@@ -168,7 +170,7 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         float Y;
 
         X = gamepad1.right_stick_x;
-        Y = -gamepad1.left_stick_y;
+        Y = gamepad1.left_stick_y;
         leftDrive.setPower(Y - X);
         rightDrive.setPower(Y + X);
     }
@@ -201,7 +203,7 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     private void setFlywheelVelocity() {
 
         if (gamepad1.options) {
-            flywheel.setPower(-0.5);
+            flywheel.setPower(0.5);
         } else if (gamepad1.left_bumper) {
             FAR_POWER_AUTO();
         } else if (gamepad1.right_bumper) {
