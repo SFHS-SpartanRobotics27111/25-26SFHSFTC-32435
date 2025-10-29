@@ -53,7 +53,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Robot: Do absolutey Nothing: Mecanum Wheel", group = "Robot")
+@Autonomous(name = "Robot: Do Absolutely Nothing: Mecanum Wheel", group = "Robot")
 public class RobotAutoNothing extends LinearOpMode {
 
     /* Declare OpMode members. */
