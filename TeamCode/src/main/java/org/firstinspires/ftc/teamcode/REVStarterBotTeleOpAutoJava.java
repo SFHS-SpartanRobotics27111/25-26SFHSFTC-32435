@@ -38,9 +38,12 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
 
     private DcMotor flywheel;
     private DcMotor coreHex;
-    private DcMotor leftDrive;
+    private DcMotor leftFrontMotor;
     private CRServo servo;
-    private DcMotor rightDrive;
+    private DcMotor rightFrontMotor;
+    private DcMotor leftBackMotor;
+    private DcMotor rightBackMotor;
+
 
     private static final int bankVelocity = 1300;
     private static final int farVelocity = 1900;
@@ -66,15 +69,17 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         // Getting components of robot into variables
         flywheel = hardwareMap.get(DcMotor.class, "flywheel");
         coreHex = hardwareMap.get(DcMotor.class, "coreHex");
-        leftDrive = hardwareMap.get(DcMotor.class, "leftDrive");
+        leftFrontMotor = hardwareMap.get(DcMotor.class, "leftFrontMotor");
         servo = hardwareMap.get(CRServo.class, "servo");
-        rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
-
+        rightFrontMotor = hardwareMap.get(DcMotor.class, "rightFrontMotor");
+        leftBackMotor = hardwareMap.get(DcMotor.class, "leftBackMotor");
+        rightBackMotor = hardwareMap.get(DcMotor.class, "rightBackMotor");
         // Establishing the direction and mode for the motors
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flywheel.setDirection(DcMotor.Direction.REVERSE);
         coreHex.setDirection(DcMotor.Direction.REVERSE);
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+
 
         // Ensures the servo is active and ready
         servo.setPower(0);
@@ -169,10 +174,14 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         float X;
         float Y;
 
-        X = gamepad1.right_stick_x;
-        Y = gamepad1.left_stick_y;
-        leftDrive.setPower(Y - X);
-        rightDrive.setPower(Y + X);
+       double x = gamepad1.right_stick_x;
+       double y = gamepad1.left_stick_y;
+       double rotation = gamepad1.right_stick_x;
+
+        leftFrontMotor.setPower(y + x + rotation);
+        rightFrontMotor.setPower(y + x + rotation);
+        leftBackMotor.setPower(y + x + rotation);
+        rightBackMotor.setPower(y + x + rotation);
     }
 
     /**
@@ -200,9 +209,9 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      * Circle and Square will spin up ONLY the flywheel to the target velocity set.
      * The bumpers will activate the flywheel, Core Hex feeder, and servo to cycle a series of balls.
      */
-    private void setFlywheelVelocity() {
+    private void setFlywheelVelocity() {//
 
-        if (gamepad1.options) {
+    if (gamepad1.options) {
             flywheel.setPower(0.5);
         } else if (gamepad1.left_bumper) {
             FAR_POWER_AUTO();
@@ -222,7 +231,7 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         }
     }
 
-//Automatic Flywheel controls used in Auto and TeleOp 
+//Automatic Flywheel controls used in Auto and TeleOp
 
     /**
      * The bank shot or near velocity is intended for launching balls touching or a few inches from the goal.
@@ -264,19 +273,25 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      */
     private void autoDrive(double speed, int leftDistanceInch, int rightDistanceInch, int timeout_ms) {
         autoDriveTimer.reset();
-        leftDrive.setTargetPosition((int) (leftDrive.getCurrentPosition() + leftDistanceInch * WHEELS_INCHES_TO_TICKS));
-        rightDrive.setTargetPosition((int) (rightDrive.getCurrentPosition() + rightDistanceInch * WHEELS_INCHES_TO_TICKS));
-        leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftDrive.setPower(Math.abs(speed));
-        rightDrive.setPower(Math.abs(speed));
-        while (opModeIsActive() && (leftDrive.isBusy() || rightDrive.isBusy()) && autoDriveTimer.milliseconds() < timeout_ms) {
+        leftFrontMotor.setTargetPosition((int) (leftFrontMotor.getCurrentPosition() + leftDistanceInch * WHEELS_INCHES_TO_TICKS));
+        rightBackMotor.setTargetPosition((int) (rightFrontMotor.getCurrentPosition() + rightDistanceInch * WHEELS_INCHES_TO_TICKS));
+        leftBackMotor.setTargetPosition((int) (leftFrontMotor.getCurrentPosition() + leftDistanceInch * WHEELS_INCHES_TO_TICKS));
+        rightFrontMotor.setTargetPosition((int) (rightFrontMotor.getCurrentPosition() + rightDistanceInch * WHEELS_INCHES_TO_TICKS));
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBackMotor.setPower(Math.abs(speed));
+        rightBackMotor.setPower(Math.abs(speed));
+        leftFrontMotor.setPower(Math.abs(speed));
+        rightFrontMotor.setPower(Math.abs(speed));
+        while (opModeIsActive() && (leftFrontMotor.isBusy() || rightFrontMotor.isBusy()) && autoDriveTimer.milliseconds() < timeout_ms) {
             idle();
         }
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
-        leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFrontMotor.setPower(0);
+        rightFrontMotor.setPower(0);
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     /**
@@ -345,3 +360,4 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         }
     }
 }
+//
