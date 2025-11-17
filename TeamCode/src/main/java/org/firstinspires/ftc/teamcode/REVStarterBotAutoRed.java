@@ -32,6 +32,7 @@ public class REVStarterBotAutoRed extends LinearOpMode { // this is the name of 
     private double WHEELS_INCHES_TO_TICKS = (28 * 5 * 3) / (3 * Math.PI);
     private ElapsedTime autoLaunchTimer = new ElapsedTime();
     private ElapsedTime autoDriveTimer = new ElapsedTime();
+
     @Override
     public void runOpMode() { // this runs when you press the INITIALIZE button on the driver hub
         awake();
@@ -43,20 +44,23 @@ public class REVStarterBotAutoRed extends LinearOpMode { // this is the name of 
 
 
         // Getting components of robot into variables
-        flywheel = hardwareMap.get(DcMotor.class, "flywheel");
-        coreHex = hardwareMap.get(DcMotor.class, "coreHex");
-        leftFrontMotor = hardwareMap.get(DcMotor.class, "leftFrontMotor");
-        servo = hardwareMap.get(CRServo.class, "servo");
-        rightFrontMotor = hardwareMap.get(DcMotor.class, "rightFrontMotor");
-        leftBackMotor = hardwareMap.get(DcMotor.class, "leftBackMotor");
-        rightBackMotor = hardwareMap.get(DcMotor.class, "rightBackMotor");
+        //flywheel = hardwareMap.get(DcMotor.class, "flywheel");
+        //coreHex = hardwareMap.get(DcMotor.class, "coreHex");
+        leftFrontMotor = hardwareMap.get(DcMotor.class, "leftFront");
+        //servo = hardwareMap.get(CRServo.class, "servo");
+        rightFrontMotor = hardwareMap.get(DcMotor.class, "rightFront");
+        leftBackMotor = hardwareMap.get(DcMotor.class, "leftBack");
+        rightBackMotor = hardwareMap.get(DcMotor.class, "rightBack");
         // Establishing the direction and mode for the motors
-        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+       /* flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flywheel.setDirection(DcMotor.Direction.REVERSE);
         coreHex.setDirection(DcMotor.Direction.REVERSE);
+        */
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE); // these might need to change depending on motor directions
         // currently it seems like only 1 wheel will go the right way but i can't test it because the drivetrain
         // isn't ready yet
+
+
 
     } // how the code knows where a function stops
 
@@ -67,11 +71,12 @@ public class REVStarterBotAutoRed extends LinearOpMode { // this is the name of 
 
             telemetry.addLine("Ready!");
             waitForStart();
-            doAutoRed();
+            //doAutoRed();
 
 
         }
     }
+
     private void autoDrive(double speed, int leftDistanceInch, int rightDistanceInch, int timeout_ms) { // function ptovided by rev for autodrive
         autoDriveTimer.reset();
         leftFrontMotor.setTargetPosition((int) (leftFrontMotor.getCurrentPosition() + leftDistanceInch * WHEELS_INCHES_TO_TICKS));
@@ -105,6 +110,7 @@ public class REVStarterBotAutoRed extends LinearOpMode { // this is the name of 
         }
 
     }
+
     private void doAutoRed() { // provided by rev
 
         if (opModeIsActive()) {

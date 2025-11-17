@@ -32,6 +32,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.IMU;
 
 @TeleOp
 public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
@@ -67,22 +68,22 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     void awake() {
 
         // Getting components of robot into variables
-        flywheel = hardwareMap.get(DcMotor.class, "flywheel");
-        coreHex = hardwareMap.get(DcMotor.class, "coreHex");
-        leftFrontMotor = hardwareMap.get(DcMotor.class, "leftFrontMotor");
-        servo = hardwareMap.get(CRServo.class, "servo");
-        rightFrontMotor = hardwareMap.get(DcMotor.class, "rightFrontMotor");
-        leftBackMotor = hardwareMap.get(DcMotor.class, "leftBackMotor");
-        rightBackMotor = hardwareMap.get(DcMotor.class, "rightBackMotor");
+        //flywheel = hardwareMap.get(DcMotor.class, "flywheel");
+        //coreHex = hardwareMap.get(DcMotor.class, "coreHex");
+        leftFrontMotor = hardwareMap.get(DcMotor.class, "leftFront");
+        //servo = hardwareMap.get(CRServo.class, "servo");
+        rightFrontMotor = hardwareMap.get(DcMotor.class, "rightFront");
+        leftBackMotor = hardwareMap.get(DcMotor.class, "leftBack");
+        rightBackMotor = hardwareMap.get(DcMotor.class, "rightBack");
         // Establishing the direction and mode for the motors
-        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flywheel.setDirection(DcMotor.Direction.REVERSE);
-        coreHex.setDirection(DcMotor.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        //flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //flywheel.setDirection(DcMotor.Direction.REVERSE);
+        //coreHex.setDirection(DcMotor.Direction.REVERSE);
+        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
 
 
         // Ensures the servo is active and ready
-        servo.setPower(0);
+        //servo.setPower(0);
     }
 
     // Function for everything that happens before start button is actually clicked (things like selecting auto or teleop process)
@@ -155,11 +156,11 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
             while (opModeIsActive()) {
                 // Calling our methods while the OpMode is running
                 splitStickArcadeDrive();
-                setFlywheelVelocity();
-                manualCoreHexAndServoControl();
+                //setFlywheelVelocity();
+                //manualCoreHexAndServoControl();
 
-                telemetry.addData("Flywheel Velocity", ((DcMotorEx) flywheel).getVelocity());
-                telemetry.addData("Flywheel Power", flywheel.getPower());
+                //telemetry.addData("Flywheel Velocity", ((DcMotorEx) flywheel).getVelocity());
+                //telemetry.addData("Flywheel Power", flywheel.getPower());
                 telemetry.update();
             }
         }
