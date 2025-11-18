@@ -7,12 +7,13 @@ import org.firstinspires.ftc.teamcode.OmniDrive;
 
 //TeleOp Parameter is needed to tell the control hub that it should show up in the TeleOp menu and not the Auto menu
 @TeleOp(name = "Field Centric Omni TeleOp", group = "Robot")
-public class FieldCentricTeleOP extends LinearOpMode {
+public class FieldCentricTeleOP extends LinearOpMode
+{
     @Override
-    public void runOpMode() {
+    public void runOpMode()
+    {
         // set up motors
         OmniDrive drive = new OmniDrive(this);
-
 
         telemetry.addData(">", "Setup complete. Press start");
         telemetry.update();
@@ -24,7 +25,6 @@ public class FieldCentricTeleOP extends LinearOpMode {
             // joystick y is negative for forward, so negate it
             // labels are for Playstation controller but the library also has labels for Xbox controllers if you go back to it.
             drive.driveFirstPerson(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.options);
-
 
             telemetry.update();
         }
