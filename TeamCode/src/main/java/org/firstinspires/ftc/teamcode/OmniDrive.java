@@ -45,7 +45,7 @@ public class OmniDrive {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //this lets the IMU know all the stuff needed for forward to be forward
+        //this lets the IMU know all the stuff needed for forward to be forward TODO change for sparky mounted vertically
         IMU.Parameters parameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.UP,

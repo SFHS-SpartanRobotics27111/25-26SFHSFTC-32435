@@ -34,6 +34,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.OmniDrive;
+
 @TeleOp
 public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
 
@@ -56,6 +58,8 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     private double WHEELS_INCHES_TO_TICKS = (28 * 5 * 3) / (3 * Math.PI);
     private ElapsedTime autoLaunchTimer = new ElapsedTime();
     private ElapsedTime autoDriveTimer = new ElapsedTime();
+
+    private OmniDrive drive = new OmniDrive(this);
 
     @Override
     public void runOpMode() {
@@ -80,6 +84,7 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         //flywheel.setDirection(DcMotor.Direction.REVERSE);
         //coreHex.setDirection(DcMotor.Direction.REVERSE);
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
+
 
 
         // Ensures the servo is active and ready
@@ -125,24 +130,8 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     private String selectOperation(String state, boolean cycleNext) {
 
         // Configures operation mode selection (already explained up above)
-        if (cycleNext) {
-            if (state.equals(TELEOP)) {
-                state = AUTO_BLUE;
-            } else if (state.equals(AUTO_BLUE)) {
-                state = AUTO_RED;
-            } else if (state.equals(AUTO_RED)) {
-                state = TELEOP;
-            } else {
-                telemetry.addData("WARNING", "Unknown Operation State Reached - Restart Program");
-            }
-        }
-        telemetry.addLine("Press Home Button to cycle options");
-        telemetry.addData("CURRENT SELECTION", state);
-        if (state.equals(AUTO_BLUE) || state.equals(AUTO_RED)) {
-            telemetry.addLine("Please remember to enable the AUTO timer!");
-        }
-        telemetry.addLine("Press START to start your program");
-        return state;
+
+        return TELEOP;
     }
 
     //TeleOp Code
@@ -155,7 +144,8 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 // Calling our methods while the OpMode is running
-                splitStickArcadeDrive();
+                drive.imu.resetYaw();
+                drive.driveFirstPerson(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.options);
                 //setFlywheelVelocity();
                 //manualCoreHexAndServoControl();
 
@@ -172,17 +162,7 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      */
     private void splitStickArcadeDrive() {
 
-        float X;
-        float Y;
 
-       double x = gamepad1.right_stick_x;
-       double y = gamepad1.left_stick_y;
-       double rotation = gamepad1.right_stick_x;
-
-        leftFrontMotor.setPower(y + x + rotation);
-        rightFrontMotor.setPower(y + x + rotation);
-        leftBackMotor.setPower(y + x + rotation);
-        rightBackMotor.setPower(y + x + rotation);
     }
 
     /**
@@ -191,16 +171,16 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     private void manualCoreHexAndServoControl() {
 
         // Manual control for the Core Hex intake
-        if (gamepad1.cross) {
+        if (gamepad2.cross) {
             coreHex.setPower(0.5);
-        } else if (gamepad1.triangle) {
+        } else if (gamepad2.triangle) {
             coreHex.setPower(-0.5);
         }
 
         // Manual control for the hopper's servo
-        if (gamepad1.dpad_left) {
+        if (gamepad2.dpad_left) {
             servo.setPower(1);
-        } else if (gamepad1.dpad_right) {
+        } else if (gamepad2.dpad_right) {
             servo.setPower(-1);
         }
     }
@@ -212,21 +192,21 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      */
     private void setFlywheelVelocity() {//
 
-    if (gamepad1.options) {
+    if (gamepad2.options) {
             flywheel.setPower(0.5);
-        } else if (gamepad1.left_bumper) {
+        } else if (gamepad2.left_bumper) {
             FAR_POWER_AUTO();
-        } else if (gamepad1.right_bumper) {
+        } else if (gamepad2.right_bumper) {
             BANK_SHOT_AUTO();
-        } else if (gamepad1.circle) {
+        } else if (gamepad2.circle) {
             ((DcMotorEx) flywheel).setVelocity(bankVelocity);
-        } else if (gamepad1.square) {
+        } else if (gamepad2.square) {
             ((DcMotorEx) flywheel).setVelocity(maxVelocity);
         } else {
             ((DcMotorEx) flywheel).setVelocity(0);
             coreHex.setPower(0);
             // The check below is in place to prevent stuttering with the servo. It checks if the servo is under manual control!
-            if (!gamepad1.dpad_right && !gamepad1.dpad_left) {
+            if (!gamepad2.dpad_right && !gamepad2.dpad_left) {
                 servo.setPower(0);
             }
         }
@@ -272,25 +252,33 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      * This method contains the math to be used with the inputted distance for the encoders, resets the elapsed timer, and
      * provides a check for it to run so long as the motors are busy and the timer has not run out.
      */
-    private void autoDrive(double speed, int leftDistanceInch, int rightDistanceInch, int timeout_ms) {
+    private void autoDrive(double speed, int leftDistanceInch, int rightDistanceInch, int timeout_ms)
+    {
         autoDriveTimer.reset();
+
         leftFrontMotor.setTargetPosition((int) (leftFrontMotor.getCurrentPosition() + leftDistanceInch * WHEELS_INCHES_TO_TICKS));
         rightBackMotor.setTargetPosition((int) (rightFrontMotor.getCurrentPosition() + rightDistanceInch * WHEELS_INCHES_TO_TICKS));
         leftBackMotor.setTargetPosition((int) (leftFrontMotor.getCurrentPosition() + leftDistanceInch * WHEELS_INCHES_TO_TICKS));
         rightFrontMotor.setTargetPosition((int) (rightFrontMotor.getCurrentPosition() + rightDistanceInch * WHEELS_INCHES_TO_TICKS));
+
         leftFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         leftBackMotor.setPower(Math.abs(speed));
         rightBackMotor.setPower(Math.abs(speed));
         leftFrontMotor.setPower(Math.abs(speed));
         rightFrontMotor.setPower(Math.abs(speed));
-        while (opModeIsActive() && (leftFrontMotor.isBusy() || rightFrontMotor.isBusy()) && autoDriveTimer.milliseconds() < timeout_ms) {
+
+        while (opModeIsActive() && (leftFrontMotor.isBusy() || rightFrontMotor.isBusy()) && autoDriveTimer.milliseconds() < timeout_ms)
+        {
             idle();
         }
+
         leftFrontMotor.setPower(0);
         rightFrontMotor.setPower(0);
+
         leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
@@ -361,4 +349,3 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         }
     }
 }
-//
