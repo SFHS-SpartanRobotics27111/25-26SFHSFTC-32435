@@ -48,7 +48,7 @@ public class OmniDrive {
         //this lets the IMU know all the stuff needed for forward to be forward TODO change for sparky mounted vertically
         IMU.Parameters parameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                        RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
                         RevHubOrientationOnRobot.UsbFacingDirection.LEFT
                 )
         );
@@ -73,10 +73,10 @@ public class OmniDrive {
         // Set up a variable for each drive wheel to save the power level for telemetry.
         // Unit circle ahh power delivery IYKYK
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turn), 1);
-        double leftFrontPower = (rotY + rotX + -turn) / denominator;
-        double rightFrontPower = (rotY - rotX - -turn) / denominator;
-        double leftBackPower = (rotY - rotX + -turn) / denominator;
-        double rightBackPower = (rotY + rotX - -turn) / denominator;
+        double leftFrontPower = (rotY + rotX + turn) / denominator;
+        double rightFrontPower = (rotY - rotX - turn) / denominator;
+        double leftBackPower = (rotY - rotX + turn) / denominator;
+        double rightBackPower = (rotY + rotX - turn) / denominator;
 
         // Normalize the values so no wheel power exceeds 100%
         // This ensures that the robot maintains the desired motion.

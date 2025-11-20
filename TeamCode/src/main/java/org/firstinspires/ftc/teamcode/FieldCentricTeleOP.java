@@ -17,6 +17,7 @@ public class FieldCentricTeleOP extends LinearOpMode
 
         telemetry.addData(">", "Setup complete. Press start");
         telemetry.update();
+        drive.imu.resetYaw();
 
         waitForStart();
 
