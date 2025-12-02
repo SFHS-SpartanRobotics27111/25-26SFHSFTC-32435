@@ -1,28 +1,28 @@
 /* 1. Select the mode you wish to drive with: AUTO RED or AUTO BLUE, or TELEOP
-*       a. TELEOP:
-*           Uses SPLIT STICK ARCADE for movement (one stick controls forward and back, other controls turning)
-*
-*           Pressing CROSS spins intake forward
-*           Pressing TRIANGLE spins intake back
-*
-*           Pressing LEFT D-PAD and RIGHT D-PAD spins the agitator in different directions
-*
-*           Pressing OPTIONS puts flywheel in reverse
-*
-*           Pressing LEFT BUMPER does a far shot
-*           Pressing SQUARE changes flywheel speed to far shot speed or "max" velocity
-*
-*           Pressing RIGHT BUMBER does a near shot
-*           Pressing CIRCLE changes flywheel speed to near shot speed or "bank" velocity
-*
-*           Pressing nothing stops the flywheel and hex motor, if you are not manually controlling the agitator, agitator will not stutter
-*
-*       b. AUTO RED and AUTO BLUE:
-*           For 10 seconds shoots any balls pre-loaded into RED or BLUE goal
-*           Backs up a little
-*           Turns around
-*           Gets off of line
-*/
+ *       a. TELEOP:
+ *           Uses SPLIT STICK ARCADE for movement (one stick controls forward and back, other controls turning)
+ *
+ *           Pressing CROSS spins intake forward
+ *           Pressing TRIANGLE spins intake back
+ *
+ *           Pressing LEFT D-PAD and RIGHT D-PAD spins the agitator in different directions
+ *
+ *           Pressing OPTIONS puts flywheel in reverse
+ *
+ *           Pressing LEFT BUMPER does a far shot
+ *           Pressing SQUARE changes flywheel speed to far shot speed or "max" velocity
+ *
+ *           Pressing RIGHT BUMBER does a near shot
+ *           Pressing CIRCLE changes flywheel speed to near shot speed or "bank" velocity
+ *
+ *           Pressing nothing stops the flywheel and hex motor, if you are not manually controlling the agitator, agitator will not stutter
+ *
+ *       b. AUTO RED and AUTO BLUE:
+ *           For 10 seconds shoots any balls pre-loaded into RED or BLUE goal
+ *           Backs up a little
+ *           Turns around
+ *           Gets off of line
+ */
 
 package org.firstinspires.ftc.teamcode;
 
@@ -59,7 +59,7 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     private ElapsedTime autoLaunchTimer = new ElapsedTime();
     private ElapsedTime autoDriveTimer = new ElapsedTime();
 
-    private OmniDrive drive = new OmniDrive(this);
+
 
     @Override
     public void runOpMode() {
@@ -72,23 +72,22 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     void awake() {
 
         // Getting components of robot into variables
-        //flywheel = hardwareMap.get(DcMotor.class, "flywheel");
-        //coreHex = hardwareMap.get(DcMotor.class, "coreHex");
+        flywheel = hardwareMap.get(DcMotor.class, "flywheel");
+        coreHex = hardwareMap.get(DcMotor.class, "coreHex");
         leftFrontMotor = hardwareMap.get(DcMotor.class, "leftFront");
-        //servo = hardwareMap.get(CRServo.class, "servo");
+        servo = hardwareMap.get(CRServo.class, "servo");
         rightFrontMotor = hardwareMap.get(DcMotor.class, "rightFront");
         leftBackMotor = hardwareMap.get(DcMotor.class, "leftBack");
         rightBackMotor = hardwareMap.get(DcMotor.class, "rightBack");
         // Establishing the direction and mode for the motors
-        //flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //flywheel.setDirection(DcMotor.Direction.REVERSE);
-        //coreHex.setDirection(DcMotor.Direction.REVERSE);
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel.setDirection(DcMotor.Direction.REVERSE);
+        coreHex.setDirection(DcMotor.Direction.REVERSE);
         leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
 
 
-
         // Ensures the servo is active and ready
-        //servo.setPower(0);
+        servo.setPower(0);
     }
 
     // Function for everything that happens before start button is actually clicked (things like selecting auto or teleop process)
@@ -143,14 +142,15 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
+                OmniDrive drive = new OmniDrive(this);
                 // Calling our methods while the OpMode is running
                 drive.imu.resetYaw();
                 drive.driveFirstPerson(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.options);
-                //setFlywheelVelocity();
-                //manualCoreHexAndServoControl();
+                setFlywheelVelocity();
+                manualCoreHexAndServoControl();
 
-                //telemetry.addData("Flywheel Velocity", ((DcMotorEx) flywheel).getVelocity());
-                //telemetry.addData("Flywheel Power", flywheel.getPower());
+                telemetry.addData("Flywheel Velocity", ((DcMotorEx) flywheel).getVelocity());
+                telemetry.addData("Flywheel Power", flywheel.getPower());
                 telemetry.update();
             }
         }
@@ -178,9 +178,9 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         }
 
         // Manual control for the hopper's servo
-        if (gamepad2.dpad_left) {
+        if (gamepad2.options) {
             servo.setPower(1);
-        } else if (gamepad2.dpad_right) {
+        } else if (gamepad2.back) {
             servo.setPower(-1);
         }
     }
@@ -192,7 +192,7 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
      */
     private void setFlywheelVelocity() {//
 
-    if (gamepad2.options) {
+        if (gamepad2.options) {
             flywheel.setPower(0.5);
         } else if (gamepad2.left_bumper) {
             FAR_POWER_AUTO();
@@ -208,144 +208,144 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
             // The check below is in place to prevent stuttering with the servo. It checks if the servo is under manual control!
             if (!gamepad2.dpad_right && !gamepad2.dpad_left) {
                 servo.setPower(0);
+
             }
-        }
-    }
+        }}
 
 //Automatic Flywheel controls used in Auto and TeleOp
 
-    /**
-     * The bank shot or near velocity is intended for launching balls touching or a few inches from the goal.
-     * When running this function, the flywheel will spin up and the Core Hex will wait before balls can be fed.
-     * The servo will spin until the bumper is released.
-     */
-    private void BANK_SHOT_AUTO() {
-        ((DcMotorEx) flywheel).setVelocity(bankVelocity);
-        servo.setPower(-1);
-        if (((DcMotorEx) flywheel).getVelocity() >= bankVelocity - 100) {
-            coreHex.setPower(1);
-        } else {
-            coreHex.setPower(0);
+        /**
+         * The bank shot or near velocity is intended for launching balls touching or a few inches from the goal.
+         * When running this function, the flywheel will spin up and the Core Hex will wait before balls can be fed.
+         * The servo will spin until the bumper is released.
+         */
+        private void BANK_SHOT_AUTO () {
+            ((DcMotorEx) flywheel).setVelocity(bankVelocity);
+            servo.setPower(-1);
+            if (((DcMotorEx) flywheel).getVelocity() >= bankVelocity - 100) {
+                coreHex.setPower(1);
+            } else {
+                coreHex.setPower(0);
+            }
         }
-    }
 
-    /**
-     * The far power velocity is intended for launching balls a few feet from the goal. It may require adjusting the deflector.
-     * When running this function, the flywheel will spin up and the Core Hex will wait before balls can be fed.
-     * The servo will spin until the bumper is released.
-     */
-    private void FAR_POWER_AUTO() {
-        ((DcMotorEx) flywheel).setVelocity(farVelocity);
-        servo.setPower(-1);
-        if (((DcMotorEx) flywheel).getVelocity() >= farVelocity - 100) {
-            coreHex.setPower(1);
-        } else {
-            coreHex.setPower(0);
+        /**
+         * The far power velocity is intended for launching balls a few feet from the goal. It may require adjusting the deflector.
+         * When running this function, the flywheel will spin up and the Core Hex will wait before balls can be fed.
+         * The servo will spin until the bumper is released.
+         */
+        private void FAR_POWER_AUTO () {
+            ((DcMotorEx) flywheel).setVelocity(farVelocity);
+            servo.setPower(-1);
+            if (((DcMotorEx) flywheel).getVelocity() >= farVelocity - 100) {
+                coreHex.setPower(1);
+            } else {
+                coreHex.setPower(0);
+            }
         }
-    }
 
 //Autonomous Code
 //For autonomous, the robot will launch the pre-loaded 3 balls then back away from the goal, turn, and back up off the launch line.
 
-    /**
-     * For autonomous, the robot is using a timer and encoders on the drivetrain to move away from the target.
-     * This method contains the math to be used with the inputted distance for the encoders, resets the elapsed timer, and
-     * provides a check for it to run so long as the motors are busy and the timer has not run out.
-     */
-    private void autoDrive(double speed, int leftDistanceInch, int rightDistanceInch, int timeout_ms)
-    {
-        autoDriveTimer.reset();
-
-        leftFrontMotor.setTargetPosition((int) (leftFrontMotor.getCurrentPosition() + leftDistanceInch * WHEELS_INCHES_TO_TICKS));
-        rightBackMotor.setTargetPosition((int) (rightFrontMotor.getCurrentPosition() + rightDistanceInch * WHEELS_INCHES_TO_TICKS));
-        leftBackMotor.setTargetPosition((int) (leftFrontMotor.getCurrentPosition() + leftDistanceInch * WHEELS_INCHES_TO_TICKS));
-        rightFrontMotor.setTargetPosition((int) (rightFrontMotor.getCurrentPosition() + rightDistanceInch * WHEELS_INCHES_TO_TICKS));
-
-        leftFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        leftBackMotor.setPower(Math.abs(speed));
-        rightBackMotor.setPower(Math.abs(speed));
-        leftFrontMotor.setPower(Math.abs(speed));
-        rightFrontMotor.setPower(Math.abs(speed));
-
-        while (opModeIsActive() && (leftFrontMotor.isBusy() || rightFrontMotor.isBusy()) && autoDriveTimer.milliseconds() < timeout_ms)
+        /*
+         * For autonomous, the robot is using a timer and encoders on the drivetrain to move away from the target.
+         * This method contains the math to be used with the inputted distance for the encoders, resets the elapsed timer, and
+         * provides a check for it to run so long as the motors are busy and the timer has not run out.
+         */
+        private void autoDrive ( double speed, int leftDistanceInch, int rightDistanceInch,
+        int timeout_ms)
         {
-            idle();
-        }
+            autoDriveTimer.reset();
 
-        leftFrontMotor.setPower(0);
-        rightFrontMotor.setPower(0);
+            leftFrontMotor.setTargetPosition((int) (leftFrontMotor.getCurrentPosition() + leftDistanceInch * WHEELS_INCHES_TO_TICKS));
+            rightBackMotor.setTargetPosition((int) (rightFrontMotor.getCurrentPosition() + rightDistanceInch * WHEELS_INCHES_TO_TICKS));
+            leftBackMotor.setTargetPosition((int) (leftFrontMotor.getCurrentPosition() + leftDistanceInch * WHEELS_INCHES_TO_TICKS));
+            rightFrontMotor.setTargetPosition((int) (rightFrontMotor.getCurrentPosition() + rightDistanceInch * WHEELS_INCHES_TO_TICKS));
 
-        leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
+            leftFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-    /**
-     * Blue Alliance Autonomous
-     * The robot will fire the pre-loaded balls until the 10 second timer ends.
-     * Then it will back away from the goal and off the launch line.
-     */
-    private void doAutoBlue() {
+            leftBackMotor.setPower(Math.abs(speed));
+            rightBackMotor.setPower(Math.abs(speed));
+            leftFrontMotor.setPower(Math.abs(speed));
+            rightFrontMotor.setPower(Math.abs(speed));
 
-        if (opModeIsActive()) {
-
-            telemetry.addData("RUNNING OPMODE", operationSelected);
-            telemetry.update();
-
-            autoLaunchTimer.reset();
-            while (opModeIsActive() && autoLaunchTimer.milliseconds() < 10000) {
-
-                BANK_SHOT_AUTO();
-
-                telemetry.addData("Launcher Countdown", autoLaunchTimer.seconds());
-                telemetry.update();
+            while (opModeIsActive() && (leftFrontMotor.isBusy() || rightFrontMotor.isBusy()) && autoDriveTimer.milliseconds() < timeout_ms) {
+                idle();
             }
 
-            ((DcMotorEx) flywheel).setVelocity(0);
-            coreHex.setPower(0);
-            servo.setPower(0);
-            // Back Up
-            autoDrive(0.5, -12, -12, 5000);
-            // Turn
-            autoDrive(0.5, -8, 8, 5000);
-            // Drive off Line
-            autoDrive(1, -50, -50, 5000);
+            leftFrontMotor.setPower(0);
+            rightFrontMotor.setPower(0);
+
+            leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
-    }
 
-    /**
-     * Red Alliance Autonomous
-     * The robot will fire the pre-loaded balls until the 10 second timer ends.
-     * Then it will back away from the goal and off the launch line.
-     */
-    private void doAutoRed() {
+        /**
+         * Blue Alliance Autonomous
+         * The robot will fire the pre-loaded balls until the 10 second timer ends.
+         * Then it will back away from the goal and off the launch line.
+         */
+        private void doAutoBlue () {
 
-        if (opModeIsActive()) {
+            if (opModeIsActive()) {
 
-            telemetry.addData("RUNNING OPMODE", operationSelected);
-            telemetry.update();
-
-            autoLaunchTimer.reset();
-            while (opModeIsActive() && autoLaunchTimer.milliseconds() < 10000) {
-
-                BANK_SHOT_AUTO();
-
-                telemetry.addData("Launcher Countdown", autoLaunchTimer.seconds());
+                telemetry.addData("RUNNING OPMODE", operationSelected);
                 telemetry.update();
-            }
 
-            ((DcMotorEx) flywheel).setVelocity(0);
-            coreHex.setPower(0);
-            servo.setPower(0);
-            // Back Up
-            autoDrive(0.5, -12, -12, 5000);
-            // Turn
-            autoDrive(0.5, 8, -8, 5000);
-            // Drive off Line
-            autoDrive(1, -50, -50, 5000);
+                autoLaunchTimer.reset();
+                while (opModeIsActive() && autoLaunchTimer.milliseconds() < 10000) {
+
+                    BANK_SHOT_AUTO();
+
+                    telemetry.addData("Launcher Countdown", autoLaunchTimer.seconds());
+                    telemetry.update();
+                }
+
+                ((DcMotorEx) flywheel).setVelocity(0);
+                coreHex.setPower(0);
+                servo.setPower(0);
+                // Back Up
+                autoDrive(0.5, -12, -12, 5000);
+                // Turn
+                autoDrive(0.5, -8, 8, 5000);
+                // Drive off Line
+                autoDrive(1, -50, -50, 5000);
+            }
+        }
+
+        /**
+         * Red Alliance Autonomous
+         * The robot will fire the pre-loaded balls until the 10 second timer ends.
+         * Then it will back away from the goal and off the launch line.
+         */
+        private void doAutoRed () {
+
+            if (opModeIsActive()) {
+
+                telemetry.addData("RUNNING OPMODE", operationSelected);
+                telemetry.update();
+
+                autoLaunchTimer.reset();
+                while (opModeIsActive() && autoLaunchTimer.milliseconds() < 10000) {
+
+                    BANK_SHOT_AUTO();
+
+                    telemetry.addData("Launcher Countdown", autoLaunchTimer.seconds());
+                    telemetry.update();
+                }
+
+                ((DcMotorEx) flywheel).setVelocity(0);
+                coreHex.setPower(0);
+                servo.setPower(0);
+                // Back Up
+                autoDrive(0.5, -12, -12, 5000);
+                // Turn
+                autoDrive(0.5, 8, -8, 5000);
+                // Drive off Line
+                autoDrive(1, -50, -50, 5000);
+            }
         }
     }
-}
