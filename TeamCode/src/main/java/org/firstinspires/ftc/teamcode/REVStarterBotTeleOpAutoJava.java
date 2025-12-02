@@ -144,7 +144,7 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
             while (opModeIsActive()) {
                 OmniDrive drive = new OmniDrive(this);
                 // Calling our methods while the OpMode is running
-                drive.imu.resetYaw();
+                //  drive.imu.resetYaw();
                 drive.driveFirstPerson(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.options);
                 setFlywheelVelocity();
                 manualCoreHexAndServoControl();
@@ -178,9 +178,9 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         }
 
         // Manual control for the hopper's servo
-        if (gamepad2.options) {
+        if (gamepad2.dpad_left) {
             servo.setPower(1);
-        } else if (gamepad2.back) {
+        } else if (gamepad2.dpad_right) {
             servo.setPower(-1);
         }
     }

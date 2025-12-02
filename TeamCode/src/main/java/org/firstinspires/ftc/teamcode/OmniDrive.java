@@ -49,7 +49,7 @@ public class OmniDrive {
         IMU.Parameters parameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                        RevHubOrientationOnRobot.UsbFacingDirection.UP
                 )
         );
         imu.initialize(parameters);
