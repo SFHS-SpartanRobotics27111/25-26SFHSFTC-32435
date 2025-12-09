@@ -2,18 +2,18 @@
 *       a. TELEOP:
 *           Uses SPLIT STICK ARCADE for movement (one stick controls forward and back, other controls turning)
 *
-*           Pressing CROSS spins intake forward
-*           Pressing TRIANGLE spins intake back
+*           Pressing A spins intake forward
+*           Pressing Y spins intake back
 *
 *           Pressing LEFT D-PAD and RIGHT D-PAD spins the agitator in different directions
 *
 *           Pressing OPTIONS puts flywheel in reverse
 *
 *           Pressing LEFT BUMPER does a far shot
-*           Pressing SQUARE changes flywheel speed to far shot speed or "max" velocity
+*           Pressing X changes flywheel speed to far shot speed or "max" velocity
 *
 *           Pressing RIGHT BUMBER does a near shot
-*           Pressing CIRCLE changes flywheel speed to near shot speed or "bank" velocity
+*           Pressing B changes flywheel speed to near shot speed or "bank" velocity
 *
 *           Pressing nothing stops the flywheel and hex motor, if you are not manually controlling the agitator, agitator will not stutter
 *
@@ -58,8 +58,9 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     private double WHEELS_INCHES_TO_TICKS = (28 * 5 * 3) / (3 * Math.PI);
     private ElapsedTime autoLaunchTimer = new ElapsedTime();
     private ElapsedTime autoDriveTimer = new ElapsedTime();
+    //OmniDrive drive = new OmniDrive(this);
 
-    private OmniDrive drive = new OmniDrive(this);
+
 
     @Override
     public void runOpMode() {
@@ -72,23 +73,21 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     void awake() {
 
         // Getting components of robot into variables
-        //flywheel = hardwareMap.get(DcMotor.class, "flywheel");
-        //coreHex = hardwareMap.get(DcMotor.class, "coreHex");
-        leftFrontMotor = hardwareMap.get(DcMotor.class, "leftFront");
-        //servo = hardwareMap.get(CRServo.class, "servo");
-        rightFrontMotor = hardwareMap.get(DcMotor.class, "rightFront");
-        leftBackMotor = hardwareMap.get(DcMotor.class, "leftBack");
-        rightBackMotor = hardwareMap.get(DcMotor.class, "rightBack");
+        flywheel = hardwareMap.get(DcMotor.class, "flywheel");
+        coreHex = hardwareMap.get(DcMotor.class, "coreHex");
+
+        servo = hardwareMap.get(CRServo.class, "servo");
+
         // Establishing the direction and mode for the motors
-        //flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //flywheel.setDirection(DcMotor.Direction.REVERSE);
-        //coreHex.setDirection(DcMotor.Direction.REVERSE);
-        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel.setDirection(DcMotor.Direction.REVERSE);
+        coreHex.setDirection(DcMotor.Direction.REVERSE);
+        //leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
 
 
 
         // Ensures the servo is active and ready
-        //servo.setPower(0);
+        servo.setPower(0);
     }
 
     // Function for everything that happens before start button is actually clicked (things like selecting auto or teleop process)
@@ -144,13 +143,14 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 // Calling our methods while the OpMode is running
-                drive.imu.resetYaw();
-                drive.driveFirstPerson(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.options);
-                //setFlywheelVelocity();
-                //manualCoreHexAndServoControl();
+                OmniDrive drive = new OmniDrive(this);
+                //drive.imu.resetYaw();
+                drive.driveFirstPerson(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.start);
+                setFlywheelVelocity();
+                manualCoreHexAndServoControl();
 
-                //telemetry.addData("Flywheel Velocity", ((DcMotorEx) flywheel).getVelocity());
-                //telemetry.addData("Flywheel Power", flywheel.getPower());
+                telemetry.addData("Flywheel Velocity", ((DcMotorEx) flywheel).getVelocity());
+                telemetry.addData("Flywheel Power", flywheel.getPower());
                 telemetry.update();
             }
         }
@@ -171,9 +171,9 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     private void manualCoreHexAndServoControl() {
 
         // Manual control for the Core Hex intake
-        if (gamepad2.cross) {
+        if (gamepad2.a) {
             coreHex.setPower(0.5);
-        } else if (gamepad2.triangle) {
+        } else if (gamepad2.y) {
             coreHex.setPower(-0.5);
         }
 
@@ -187,20 +187,20 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
 
     /**
      * This if/else statement contains the controls for the flywheel, both manual and auto.
-     * Circle and Square will spin up ONLY the flywheel to the target velocity set.
+     * B and X will spin up ONLY the flywheel to the target velocity set.
      * The bumpers will activate the flywheel, Core Hex feeder, and servo to cycle a series of balls.
      */
     private void setFlywheelVelocity() {//
 
-    if (gamepad2.options) {
+    if (gamepad2.start) {
             flywheel.setPower(0.5);
         } else if (gamepad2.left_bumper) {
             FAR_POWER_AUTO();
         } else if (gamepad2.right_bumper) {
             BANK_SHOT_AUTO();
-        } else if (gamepad2.circle) {
+        } else if (gamepad2.b) {
             ((DcMotorEx) flywheel).setVelocity(bankVelocity);
-        } else if (gamepad2.square) {
+        } else if (gamepad2.x) {
             ((DcMotorEx) flywheel).setVelocity(maxVelocity);
         } else {
             ((DcMotorEx) flywheel).setVelocity(0);
