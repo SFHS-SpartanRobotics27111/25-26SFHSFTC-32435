@@ -48,9 +48,11 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     private DcMotor rightBackMotor;
 
 
-    private static final int bankVelocity = 1300;
+    private static final int bankVelocity = 1500;
+    private static final int mediumVelocity = 1700;
+    private static final int highmediumVelocity = 1800;
     private static final int farVelocity = 1900;
-    private static final int maxVelocity = 2200;
+    private static final int maxVelocity = 1600;
     private static final String TELEOP = "TELEOP";
     private static final String AUTO_BLUE = "AUTO BLUE";
     private static final String AUTO_RED = " AUTO RED";
@@ -202,6 +204,10 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
             ((DcMotorEx) flywheel).setVelocity(bankVelocity);
         } else if (gamepad2.x) {
             ((DcMotorEx) flywheel).setVelocity(maxVelocity);
+    } else if (gamepad2.back) {
+        ((DcMotorEx) flywheel).setVelocity(mediumVelocity);
+    //} else if (gamepad2.) {
+            ((DcMotorEx) flywheel).setVelocity(highmediumVelocity);
         } else {
             ((DcMotorEx) flywheel).setVelocity(0);
             coreHex.setPower(0);
