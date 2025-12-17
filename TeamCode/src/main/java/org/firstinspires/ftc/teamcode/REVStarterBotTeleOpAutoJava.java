@@ -49,8 +49,8 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
 
 
     private static final int bankVelocity = 1500;
-    private static final int mediumVelocity = 1700;
-    private static final int highmediumVelocity = 1800;
+    private static final int lowVelocity = 1200;
+    private static final int highVelocity = 1800;
     private static final int farVelocity = 1900;
     private static final int maxVelocity = 1600;
     private static final String TELEOP = "TELEOP";
@@ -203,11 +203,11 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         } else if (gamepad2.b) {
             ((DcMotorEx) flywheel).setVelocity(bankVelocity);
         } else if (gamepad2.x) {
-            ((DcMotorEx) flywheel).setVelocity(maxVelocity);
+            ((DcMotorEx) flywheel).setVelocity(lowVelocity);
+   // } else if (gamepad2.back) {
+        ((DcMotorEx) flywheel).setVelocity(lowVelocity);
     } else if (gamepad2.back) {
-        ((DcMotorEx) flywheel).setVelocity(mediumVelocity);
-    //} else if (gamepad2.) {
-            ((DcMotorEx) flywheel).setVelocity(highmediumVelocity);
+            ((DcMotorEx) flywheel).setVelocity(highVelocity);
         } else {
             ((DcMotorEx) flywheel).setVelocity(0);
             coreHex.setPower(0);
@@ -243,7 +243,7 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     private void FAR_POWER_AUTO() {
         ((DcMotorEx) flywheel).setVelocity(farVelocity);
         servo.setPower(-1);
-        if (((DcMotorEx) flywheel).getVelocity() >= farVelocity - 100) {
+        if (((DcMotorEx) flywheel).getVelocity() >= farVelocity) {
             coreHex.setPower(1);
         } else {
             coreHex.setPower(0);
