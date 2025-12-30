@@ -50,8 +50,8 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
 
     private static final int bankVelocity = 1500;
     private static final int lowVelocity = 1200;
-    private static final int highVelocity = 1800;
-    private static final int farVelocity = 1900;
+    private static final int highVelocity = 1900;
+    private static final int farVelocity = 1800;
     private static final int maxVelocity = 1600;
     private static final String TELEOP = "TELEOP";
     private static final String AUTO_BLUE = "AUTO BLUE";
@@ -205,9 +205,9 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         } else if (gamepad2.x) {
             ((DcMotorEx) flywheel).setVelocity(lowVelocity);
    // } else if (gamepad2.back) {
-        ((DcMotorEx) flywheel).setVelocity(lowVelocity);
+      //  ((DcMotorEx) flywheel).setVelocity(lowVelocity);
     } else if (gamepad2.back) {
-            ((DcMotorEx) flywheel).setVelocity(highVelocity);
+        SHOOTING_AUTO();
         } else {
             ((DcMotorEx) flywheel).setVelocity(0);
             coreHex.setPower(0);
@@ -235,15 +235,24 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
         }
     }
 
+    private void SHOOTING_AUTO() {
+        ((DcMotorEx) flywheel).setVelocity(highVelocity);
+        servo.setPower(-1);
+        if (((DcMotorEx) flywheel).getVelocity() >= highVelocity - 100) {
+            coreHex.setPower(1);
+        } else {
+            coreHex.setPower(0);
+        }
+    }
     /**
      * The far power velocity is intended for launching balls a few feet from the goal. It may require adjusting the deflector.
      * When running this function, the flywheel will spin up and the Core Hex will wait before balls can be fed.
      * The servo will spin until the bumper is released.
      */
     private void FAR_POWER_AUTO() {
-        ((DcMotorEx) flywheel).setVelocity(farVelocity);
+        ((DcMotorEx) flywheel).setVelocity(lowVelocity);
         servo.setPower(-1);
-        if (((DcMotorEx) flywheel).getVelocity() >= farVelocity) {
+        if (((DcMotorEx) flywheel).getVelocity() >= lowVelocity) {
             coreHex.setPower(1);
         } else {
             coreHex.setPower(0);
