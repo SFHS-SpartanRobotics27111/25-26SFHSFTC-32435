@@ -99,7 +99,7 @@ public class RobotAutoDriveBlueGoal extends LinearOpMode {
         leftBack.setPower(FORWARD_SPEED);
         rightBack.setPower(-FORWARD_SPEED);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 2.25)) {
+        while (opModeIsActive() && (runtime.seconds() < 1.00)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }

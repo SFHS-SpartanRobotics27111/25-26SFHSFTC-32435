@@ -252,7 +252,7 @@ public class REVStarterBotTeleOpAutoJava extends LinearOpMode {
     private void FAR_POWER_AUTO() {
         ((DcMotorEx) flywheel).setVelocity(lowVelocity);
         servo.setPower(-1);
-        if (((DcMotorEx) flywheel).getVelocity() >= lowVelocity) {
+        if (((DcMotorEx) flywheel).getVelocity() >= lowVelocity -100) {
             coreHex.setPower(1);
         } else {
             coreHex.setPower(0);

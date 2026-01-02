@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -63,11 +64,13 @@ public class RobotShootingAuto3ballshooting extends LinearOpMode {
     private DcMotor leftBack = null;
     private DcMotor rightFront = null;
     private DcMotor rightBack = null;
-    private DcMotor flywheel ;
+    private DcMotor flywheel;
     private DcMotor coreHex;
-    private CRServo servo ;
+    private CRServo servo;
 
     private static final int highVelocity = 1900;
+    private ElapsedTime autoLaunchTimer = new ElapsedTime();
+    private ElapsedTime autoDriveTimer = new ElapsedTime();
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -94,13 +97,14 @@ public class RobotShootingAuto3ballshooting extends LinearOpMode {
         rightFront.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
 
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
 
         // Wait for the game to start (driver presses START)
         waitForStart();
-
+        autoLaunchTimer.reset();
         // Step through each leg of the path, ensuring that the OpMode has not been stopped along the way.
 
         // Step 1:  Drive forward for 3 seconds
@@ -115,22 +119,14 @@ public class RobotShootingAuto3ballshooting extends LinearOpMode {
         //  }
 
         // Step 4: Shooting
-
-        ((DcMotorEx) flywheel).setVelocity(highVelocity);
-        servo.setPower(-1);
-        if (((DcMotorEx) flywheel).getVelocity() >= highVelocity - 1900)
-        {
-            coreHex.setPower(-1);
-        } else
-        {
-            coreHex.setPower(0);
-        }
-        while (opModeIsActive() && (runtime.seconds() < 10)) {
-            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+        while (opModeIsActive() && autoLaunchTimer.seconds() < 10) {
+            BANK_SHOT_AUTO();
+            telemetry.addData("Shooter Time", autoLaunchTimer.seconds());
             telemetry.update();
         }
 
         // Step 5:  Stop
+        coreHex.setPower(0);
         leftFront.setPower(0);
         rightFront.setPower(0);
         leftBack.setPower(0);
@@ -140,4 +136,22 @@ public class RobotShootingAuto3ballshooting extends LinearOpMode {
         telemetry.update();
         sleep(1000);
     }
-}
+            private void BANK_SHOT_AUTO() {
+            DcMotorEx flywheelEx = (DcMotorEx) flywheel;
+            flywheelEx.setDirection(DcMotor.Direction.REVERSE);
+            flywheel.setPower(1);
+            flywheelEx.setVelocity(highVelocity);
+            telemetry.addData("Status", "Complete");
+            telemetry.update();
+            servo.setPower(1);
+
+            if (flywheelEx.getVelocity() >= highVelocity - 100) {
+                coreHex.setPower(-1);
+            } else {
+                coreHex.setPower(0);
+            }
+
+            }
+        }
+
+
