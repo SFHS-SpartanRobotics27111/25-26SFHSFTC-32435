@@ -27,12 +27,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -54,39 +55,47 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Robot: Do Absolutely Nothing: Mecanum Wheel", group = "Robot")
-public class RobotAutoNothing extends LinearOpMode {
+@Autonomous(name = "Shoot and Move", group = "Robot")
+public class shootandmove extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor leftFront = null;
-    private DcMotor rightFront = null;
     private DcMotor leftBack = null;
+    private DcMotor rightFront = null;
     private DcMotor rightBack = null;
-    private DcMotor flywheel = null;
-    private DcMotor coreHex =null;
-    private CRServo servo = null;
+    private DcMotor flywheel;
+    private DcMotor coreHex;
+    private CRServo servo;
 
-    static final double FORWARD_SPEED = 0.9;
-    static final double TURN_SPEED = 0.5;
+    private static final int highVelocity = 1900;
+    private ElapsedTime autoLaunchTimer = new ElapsedTime();
+    private ElapsedTime autoDriveTimer = new ElapsedTime();
 
-    private final ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();
+
+
+    static final double FORWARD_SPEED = 0.6;
 
     @Override
     public void runOpMode() {
 
         // Initialize the drive system variables.
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        flywheel = hardwareMap.get(DcMotor.class, "flywheel");
+        coreHex = hardwareMap.get(DcMotor.class, "coreHex");
+        servo = hardwareMap.get(CRServo.class, "servo");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         leftFront.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
+
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
@@ -94,9 +103,77 @@ public class RobotAutoNothing extends LinearOpMode {
 
         // Wait for the game to start (driver presses START)
         waitForStart();
+        autoLaunchTimer.reset();
+        // Step through each leg of the path, ensuring that the OpMode has not been stopped along the way.
 
-        telemetry.addData("Nothing", "Complete");
+        // Step 1:  Drive forward for 3 seconds
+        //  leftFront.setPower(-FORWARD_SPEED);
+        //rightFront.setPower(FORWARD_SPEED);
+        // leftBack.setPower(FORWARD_SPEED);
+        // rightBack.setPower(-FORWARD_SPEED);
+        // runtime.reset();
+        //while (opModeIsActive() && (runtime.seconds() < 2.25)) {
+        //  telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+        //    telemetry.update();
+        //  }
+
+        // Step 4: Shooting
+        while (opModeIsActive() && autoLaunchTimer.seconds() < 10) {
+            BANK_SHOT_AUTO();
+            telemetry.addData("Shooter Time", autoLaunchTimer.seconds());
+            telemetry.update();
+        }
+
+        // Step 5:  Stop
+        coreHex.setPower(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+
+        telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);
     }
+            private void BANK_SHOT_AUTO() {
+                DcMotorEx flywheelEx = (DcMotorEx) flywheel;
+                flywheelEx.setDirection(DcMotor.Direction.REVERSE);
+                flywheel.setPower(1);
+                flywheelEx.setVelocity(highVelocity);
+                telemetry.addData("Status", "Complete");
+                telemetry.update();
+                servo.setPower(1);
+
+                while (opModeIsActive() && autoLaunchTimer.seconds() < 10)
+                if (flywheelEx.getVelocity() >= highVelocity - 100) {
+                    coreHex.setPower(-1);
+                } else {
+                    coreHex.setPower(0);
+                }
+
+                leftFront.setPower(-FORWARD_SPEED);
+                rightFront.setPower(FORWARD_SPEED);
+                leftBack.setPower(FORWARD_SPEED);
+                rightBack.setPower(-FORWARD_SPEED);
+                runtime.reset();
+                while (opModeIsActive() && (runtime.seconds() < 1.00)) {
+                    telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+                    telemetry.update();
+                }
+
+
+
+                // Step 4:  Stop
+                leftFront.setPower(0);
+                rightFront.setPower(0);
+                leftBack.setPower(0);
+                rightBack.setPower(0);
+
+                telemetry.addData("Path", "Complete");
+                telemetry.update();
+                sleep(1000);
+            }
 }
+
+
+
