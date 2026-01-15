@@ -118,7 +118,14 @@ public class shotsturnandmove extends LinearOpMode {
         //  }
 
         // Step 4: Shooting
-        while (opModeIsActive() && autoLaunchTimer.seconds() < 10) {
+        while (opModeIsActive()  && autoLaunchTimer.seconds() < 15) {
+            leftFront.setPower(0);
+            rightFront.setPower(0);
+            leftBack.setPower(0);
+            rightBack.setPower(0);
+        }
+
+        while (opModeIsActive()  && (autoLaunchTimer.seconds() > 15) && (autoLaunchTimer.seconds() < 25)) {
             BANK_SHOT_AUTO();
             telemetry.addData("Shooter Time", autoLaunchTimer.seconds());
             telemetry.update();
@@ -144,24 +151,31 @@ public class shotsturnandmove extends LinearOpMode {
         telemetry.update();
         servo.setPower(1);
 
-        while (opModeIsActive() && autoLaunchTimer.seconds() < 10)
+        while (opModeIsActive() && autoLaunchTimer.seconds() < 25)
             if (flywheelEx.getVelocity() >= highVelocity - 100) {
                 coreHex.setPower(-1);
             } else {
                 coreHex.setPower(0);
             }
 
+        leftFront.setPower(FORWARD_SPEED);
+        rightFront.setPower(FORWARD_SPEED);
+        leftBack.setPower(-FORWARD_SPEED);
+        rightBack.setPower(-FORWARD_SPEED);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.75)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
         leftFront.setPower(-FORWARD_SPEED);
         rightFront.setPower(FORWARD_SPEED);
         leftBack.setPower(FORWARD_SPEED);
         rightBack.setPower(-FORWARD_SPEED);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.00)) {
+        while (opModeIsActive() && (runtime.seconds() < 1.25)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-
-
 
         // Step 4:  Stop
         leftFront.setPower(0);
