@@ -55,8 +55,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Shoot and Move", group = "Robot")
-public class shootandmove extends LinearOpMode {
+@Autonomous(name = "Red Shots Turn and Move", group = "Robot")
+public class Redshotsturnandmove extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor leftFront = null;
@@ -118,7 +118,14 @@ public class shootandmove extends LinearOpMode {
         //  }
 
         // Step 4: Shooting
-        while (opModeIsActive() && autoLaunchTimer.seconds() < 10) {
+        while (opModeIsActive()  && autoLaunchTimer.seconds() < 15) {
+            leftFront.setPower(0);
+            rightFront.setPower(0);
+            leftBack.setPower(0);
+            rightBack.setPower(0);
+        }
+
+        while (opModeIsActive()  && (autoLaunchTimer.seconds() > 15) && (autoLaunchTimer.seconds() < 25)) {
             BANK_SHOT_AUTO();
             telemetry.addData("Shooter Time", autoLaunchTimer.seconds());
             telemetry.update();
@@ -135,45 +142,51 @@ public class shootandmove extends LinearOpMode {
         telemetry.update();
         sleep(1000);
     }
-            private void BANK_SHOT_AUTO() {
-                DcMotorEx flywheelEx = (DcMotorEx) flywheel;
-                flywheelEx.setDirection(DcMotor.Direction.REVERSE);
-                flywheel.setPower(1);
-                flywheelEx.setVelocity(highVelocity);
-                telemetry.addData("Status", "Complete");
-                telemetry.update();
-                servo.setPower(1);
+    private void BANK_SHOT_AUTO() {
+        DcMotorEx flywheelEx = (DcMotorEx) flywheel;
+        flywheelEx.setDirection(DcMotor.Direction.REVERSE);
+        flywheel.setPower(1);
+        flywheelEx.setVelocity(highVelocity);
+        telemetry.addData("Status", "Complete");
+        telemetry.update();
+        servo.setPower(1);
 
-                while (opModeIsActive() && autoLaunchTimer.seconds() < 10)
-
-                if (flywheelEx.getVelocity() >= highVelocity - 100) {
-                    coreHex.setPower(-1);
-                } else {
-                    coreHex.setPower(0);
-                }
-
-                leftFront.setPower(-FORWARD_SPEED);
-                rightFront.setPower(FORWARD_SPEED);
-                leftBack.setPower(FORWARD_SPEED);
-                rightBack.setPower(-FORWARD_SPEED);
-                runtime.reset();
-                while (opModeIsActive() && (runtime.seconds() < 1.00)) {
-                    telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
-                    telemetry.update();
-                }
-
-
-
-                // Step 4:  Stop
-                leftFront.setPower(0);
-                rightFront.setPower(0);
-                leftBack.setPower(0);
-                rightBack.setPower(0);
-
-                telemetry.addData("Path", "Complete");
-                telemetry.update();
-                sleep(1000);
+        while (opModeIsActive() && autoLaunchTimer.seconds() < 25)
+            if (flywheelEx.getVelocity() >= highVelocity - 100) {
+                coreHex.setPower(-1);
+            } else {
+                coreHex.setPower(0);
             }
+
+        leftFront.setPower(-FORWARD_SPEED);
+        rightFront.setPower(-FORWARD_SPEED);
+        leftBack.setPower(FORWARD_SPEED);
+        rightBack.setPower(FORWARD_SPEED);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.75)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        leftFront.setPower(-FORWARD_SPEED);
+        rightFront.setPower(FORWARD_SPEED);
+        leftBack.setPower(FORWARD_SPEED);
+        rightBack.setPower(-FORWARD_SPEED);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 1.25)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        // Step 4:  Stop
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+
+        telemetry.addData("Path", "Complete");
+        telemetry.update();
+        sleep(1000);
+    }
 }
 
 
