@@ -67,7 +67,7 @@ public class Redshotsturnandmove extends LinearOpMode {
     private DcMotor coreHex;
     private CRServo servo;
 
-    private static final int highVelocity = 1900;
+    private static final int highVelocity = 2000;
     private ElapsedTime autoLaunchTimer = new ElapsedTime();
     private ElapsedTime autoDriveTimer = new ElapsedTime();
 
