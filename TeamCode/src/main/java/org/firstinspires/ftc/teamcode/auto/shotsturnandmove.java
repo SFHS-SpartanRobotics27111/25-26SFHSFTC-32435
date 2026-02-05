@@ -125,7 +125,7 @@ public class shotsturnandmove extends LinearOpMode {
             rightBack.setPower(0);
         }
 
-        while (opModeIsActive()  && (autoLaunchTimer.seconds() > 15) && (autoLaunchTimer.seconds() < 25)) {
+        while (opModeIsActive()  && (autoLaunchTimer.seconds() > 14) && (autoLaunchTimer.seconds() < 25)) {
             BANK_SHOT_AUTO();
             telemetry.addData("Shooter Time", autoLaunchTimer.seconds());
             telemetry.update();
@@ -151,7 +151,7 @@ public class shotsturnandmove extends LinearOpMode {
         telemetry.update();
         servo.setPower(1);
 
-        while (opModeIsActive() && autoLaunchTimer.seconds() < 25)
+        while (opModeIsActive() && autoLaunchTimer.seconds() < 27)
             if (flywheelEx.getVelocity() >= highVelocity - 100) {
                 coreHex.setPower(-1);
             } else {
